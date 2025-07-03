@@ -1,0 +1,22 @@
+name: Repository Dispatch Test
+on:
+  workflow_dispatch:
+    inputs:
+      example:
+        description: 'example'
+        required: true
+        default: 'abc'
+        options:
+          - 'abc'
+          - '123'
+jobs:
+  myEvent:
+    runs-on: default
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: print inputs
+        run: echo inputs ${{ inputs }}
+
+      - name: print example input
+        run: echo The example input is ${{ inputs.example }}

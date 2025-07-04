@@ -9,7 +9,30 @@ from ..jwt.jwt import create_jwt
 
 config = get_config()
 
-# https://docs.github.com/en/rest/apps/apps?apiVersion=2022-11-28
+# https://docs.github.com/en/rest/apps/apps?apiVersion=2022-11-28#list-installations-for-the-authenticated-app
+def list_installations(jwt):
+    install_id = config.install_id
+    url = f"https://api.github.com/app/installations"
+    headers = {
+        "Accept":"application/vnd.github+json",
+        "Authorization":f"Bearer {jwt}",
+        "X-GitHub-Api-Version":"2022-11-28"
+    }
+    print(pretty(headers))
+    r = requests.get(url,headers = headers)
+    r_code = r.status_code
+    if r_code != 200:
+        raise Exception(
+            "\n".join([
+                f"request to {url} failed with response code {r_code}",
+                "Error:",
+                pretty(r.json()),
+            ])
+        )
+    installations = [ x["id"] for x in r.json() ]
+    out = f"installations: {installations}"
+    print(pretty(out))
+    return out
 
 # https://docs.github.com/en/rest/apps/apps?apiVersion=2022-11-28#get-an-installation-for-the-authenticated-app
 def get_installation(jwt):
@@ -24,7 +47,13 @@ def get_installation(jwt):
     r = requests.get(url,headers = headers)
     r_code = r.status_code
     if r_code != 200:
-        raise Exception(f"request to {url} failed with response code {r_code}")
+        raise Exception(
+            "\n".join([
+                f"request to {url} failed with response code {r_code}",
+                "Error:",
+                pretty(r.json()),
+            ])
+        )
     out = r.json()
     print(pretty(out))
     return out
@@ -41,8 +70,14 @@ def get_access_token(jwt):
     print(pretty(headers))
     r = requests.post(url,headers = headers)
     r_code = r.status_code
-    # if r_code != 500:
-    #     raise Exception(f"request to {url} failed with response code {r_code}")
+    if r_code != 201:
+        raise Exception(
+            "\n".join([
+                f"request to {url} failed with response code {r_code}",
+                "Error:",
+                pretty(r.json()),
+            ])
+        )
     out = r.json()
     print(pretty(out))
     return out
@@ -71,7 +106,13 @@ def workflow_dispatch(access_token):
     r_code = r.status_code
     print(r_code)
     if r_code != 204:
-        raise Exception(f"request to {url} failed with response code {r_code} and output {r.content}")
+        raise Exception(
+            "\n".join([
+                f"request to {url} failed with response code {r_code}",
+                "Error:",
+                r.content,
+            ])
+        )
     return r_code
 
 # ======================================================================
@@ -80,6 +121,7 @@ access_token = None
 
 def create_token():
     jwt = create_jwt(config)
+    list_installations(jwt)
     get_installation(jwt)
 
     global access_token

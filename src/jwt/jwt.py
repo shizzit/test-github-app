@@ -3,6 +3,8 @@ import time
 
 from ..utils.utils import read_file
 
+# https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/generating-a-json-web-token-jwt-for-a-github-app
+# note: for whatever reason, (60*10) or (10 minutes) does not seems to work in spite of the docs saying time must be no more than 10 minutes
 def create_jwt(config):
     private_key = config.private_key
     client_id = config.client_id
@@ -10,8 +12,8 @@ def create_jwt(config):
     payload = {
         # Issued at time
         'iat': int(time.time()),
-        # JWT expiration time (10 minutes maximum)
-        'exp': int(time.time()) + 600,
+        # JWT expiration time - Be aware there is a max value here.
+        'exp': int(time.time()) + 540, # 9 mins
         # GitHub App's client ID
         'iss': client_id
     }

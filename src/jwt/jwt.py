@@ -1,8 +1,6 @@
 import jwt
 import time
 
-from ..utils.utils import read_file
-
 # https://docs.github.com/en/apps/creating-github-apps/authenticating-with-a-github-app/generating-a-json-web-token-jwt-for-a-github-app
 # note: for whatever reason, (60*10) or (10 minutes) does not seems to work in spite of the docs saying time must be no more than 10 minutes
 def create_jwt(config):

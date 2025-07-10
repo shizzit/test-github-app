@@ -83,12 +83,8 @@ def get_access_token(jwt):
     return out
 
 # https://docs.github.com/en/rest/actions/workflows?apiVersion=2022-11-28#create-a-workflow-dispatch-event
-def workflow_dispatch(access_token):
-    branch = config.branch
-    owner = config.owner
-    repository = config.repository
+def workflow_dispatch(access_token,owner,repository,branch,workflow_id):
     token = access_token["token"]
-    workflow_id = config.workflow_id
     url = f"https://api.github.com/repos/{owner}/{repository}/actions/workflows/{workflow_id}/dispatches"
     payload = {
         "ref": branch,

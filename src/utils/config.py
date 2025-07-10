@@ -1,22 +1,36 @@
+import os
 import json
 import base64
 
-from .utils import read_file, pretty
+from .utils import pretty
 
 class config:
-    def __init__(self,path=None):
-        config_path = "config.json" if path is None else f"{path}/config.json"
-        self.config_raw = read_file(config_path).strip()
-        self.config_json = json.loads(self.config_raw)
-        print(pretty(self.config_json))
+    def __init__(self):
+        # self.owner = (self.config_json)["owner"]
+        # self.branch = (self.config_json)["branch"]
+        # self.repository = (self.config_json)["repository"]
+        # self.workflow_id = (self.config_json)["workflow_id"]
 
-        self.branch = (self.config_json)["branch"]
-        self.client_id = (self.config_json)["client_id"]
-        self.install_id = (self.config_json)["install_id"]
-        self.owner = (self.config_json)["owner"]
-        self.private_key = base64.b64decode((self.config_json)["private_key_base64"])
-        self.repository = (self.config_json)["repository"]
-        self.workflow_id = (self.config_json)["workflow_id"]
+        self.client_id = os.environ.get('GH_APP_CLIENT_ID')
+        self.install_id = os.environ.get('GH_APP_INSTALL_ID')
+        self.private_key_base64 = os.environ.get('GH_APP_PRIVATE_KEY_BASE64')
+
+        self.errors = []
+        if self.client_id is None:
+            self.errors.append("- 'GH_APP_CLIENT_ID'")
+        if self.install_id is None:
+            self.errors.append("- 'GH_APP_INSTALL_ID'")
+        if self.private_key_base64 is None:
+            self.errors.append("- 'GH_APP_PRIVATE_KEY_BASE64'")
+
+        if len(self.errors) != 0:
+            err_str = "\n".join([
+                "missing environment variable(s)!",
+                "\n".join(self.errors)
+            ])
+            raise(Exception(err_str))
+
+        self.private_key = base64.b64decode(self.private_key_base64)
 
 cfg = config()
 

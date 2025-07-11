@@ -2,9 +2,10 @@
 an example application to test triggering workflows
 
 1) create a github app and install it
-2) navigate to the app page and make note of the client_id
-3) while also on the app page, create and download a private key
-4) convert the contents of the private key to base64
+2) add permissions for the app. for triggering workflow, you only need "Repository permissions > Contents (read and write)".
+3) navigate to the app page and make note of the client_id
+4) while also on the app page, create and download a private key
+5) convert the contents of the private key to base64
 ```
 # on linux (bash)
 cat file | base64
